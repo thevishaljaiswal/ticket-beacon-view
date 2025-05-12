@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Mail, Clock, Check } from "lucide-react";
@@ -51,6 +52,17 @@ const dummyTickets: Ticket[] = [
 const HelpdeskTickets = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "open" | "resolved">("all");
+  const [searchParams] = useSearchParams();
+
+  // Apply filter from URL parameters when component mounts
+  useEffect(() => {
+    const status = searchParams.get("status");
+    if (status === "open" || status === "resolved") {
+      setStatusFilter(status);
+    } else {
+      setStatusFilter("all");
+    }
+  }, [searchParams]);
 
   const filteredTickets = dummyTickets.filter(ticket => {
     const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
